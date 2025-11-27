@@ -1,13 +1,22 @@
 package mathy
 
 // LeastCommonMultiple returns the LCM of two integers
+// Uses (i / gcd) * j to avoid potential integer overflow
 func LeastCommonMultiple(i, j int) int {
 	gcd := GreatestCommonDivisor(i, j)
-	return (i * j) / gcd
+	if gcd == 0 {
+		return 0
+	}
+	return (i / gcd) * j
 }
 
 // GreatestCommonDivisor returns the GCD of two integers using the Euclidean algorithm
+// Works correctly with negative numbers by using absolute values
 func GreatestCommonDivisor(i, j int) int {
+	// Use absolute values to handle negative inputs
+	i = AbsInt(i)
+	j = AbsInt(j)
+
 	if j > i {
 		i, j = j, i
 	}

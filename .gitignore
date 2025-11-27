@@ -19,7 +19,7 @@ go.work
 .idea/
 
 # Input files (personal puzzle inputs)
-input*.txt
+input.txt
 !**/input_example.txt
 
 # Prompt files

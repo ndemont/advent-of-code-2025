@@ -129,6 +129,9 @@ func TestGreatestCommonDivisor(t *testing.T) {
 		{"8 and 12", 8, 12, 4},
 		{"17 and 13", 17, 13, 1},
 		{"same numbers", 7, 7, 7},
+		{"negative and positive", -8, 12, 4},
+		{"both negative", -8, -12, 4},
+		{"with zero", 8, 0, 8},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
