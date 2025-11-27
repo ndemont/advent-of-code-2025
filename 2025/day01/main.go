@@ -1,21 +1,34 @@
 package main
 
 import (
-	_ "embed"
 	"flag"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
+
+	"github.com/ndemont/advent-of-code-2025/util"
 )
 
-//go:embed input.txt
+// Configuration for this day
+const (
+	year = 2025
+	day  = 1
+)
+
 var input string
 
-func init() {
-	// Trim trailing newlines from embedded input
-	input = strings.TrimRight(input, "\n")
-	if len(input) == 0 {
-		fmt.Println("Warning: input.txt file is empty. Paste your puzzle input there.")
+func loadInput() string {
+	// Get the current working directory (where the command is run from)
+	cwd, err := os.Getwd()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Warning: could not get working directory: %v\n", err)
+		cwd, _ = filepath.Abs(".")
 	}
+	inputPath := filepath.Join(cwd, "input.txt")
+
+	// Get input: try local file first, fetch from AoC if empty/missing
+	return strings.TrimRight(util.GetInput(year, day, inputPath), "\n")
 }
 
 func main() {
@@ -24,8 +37,11 @@ func main() {
 	flag.Parse()
 	fmt.Println("Running part", part)
 
+	// Load input when running main (not in tests)
+	input = loadInput()
+
 	if len(input) == 0 {
-		fmt.Println("Please add your puzzle input to input.txt")
+		fmt.Println("No input available. Set AOC_SESSION environment variable to fetch input.")
 		return
 	}
 
