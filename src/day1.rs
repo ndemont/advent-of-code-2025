@@ -25,18 +25,18 @@ pub fn part1(input: &(Vec<char>, Vec<isize>)) -> usize {
 
     for i in 0..directions.len() {
         let dir = directions[i];
-        let step : isize = turns[i];
+        let step : isize = turns[i] % 100;
         let mut tmp_pos: isize;
 
         if dir == 'L' {
             tmp_pos = new_position as isize - step;
-            while tmp_pos < 0 {
+            if tmp_pos < 0 {
                 tmp_pos = 100 + tmp_pos;
             }
             new_position = tmp_pos as usize;
         } else {
             tmp_pos = new_position as isize + step;
-            while tmp_pos > 99 {
+            if tmp_pos > 99 {
                 tmp_pos = 100usize.abs_diff(tmp_pos as usize) as isize;
             }
             new_position = tmp_pos as usize
