@@ -1,99 +1,80 @@
 use aoc_runner_derive::{aoc, aoc_generator};
 
+const DIAL_SIZE: isize = 100;
+
+#[derive(Debug, Clone, Copy)]
+pub enum Rotation {
+    Left { clicks: isize },
+    Right { clicks: isize },
+}
+
 #[aoc_generator(day1)]
-pub fn input_generator(input: &str) -> (Vec<char>, Vec<isize>) {
-    let mut directions = Vec::new();
-    let mut turns = Vec::new();
+pub fn input_generator(input: &str) -> Vec<Rotation> {
+    input
+        .lines()
+        .map(|line| {
+            let (rotation, clicks) = line.split_at(1);
+            let clicks: isize = clicks.parse().expect("invalid number");
 
-    for l in input.lines() {
-        let mut chars = l.chars();
-
-        directions.push(chars.next().unwrap());
-        turns.push(chars.as_str().parse().unwrap());
-    }
-
-    (directions, turns)
+            match rotation {
+                "L" => Rotation::Left { clicks },
+                "R" => Rotation::Right { clicks },
+                _ => panic!("invalid Rotation"),
+            }
+        })
+        .collect()
 }
 
 #[aoc(day1, part1)]
-pub fn part1(input: &(Vec<char>, Vec<isize>)) -> usize {
-    let mut new_position: usize = 50;
-    let mut count = 0;
+pub fn part1(input: &[Rotation]) -> usize {
+    let mut position: isize = 50;
+    let mut count: usize = 0;
 
-    let directions = &input.0;
-    let turns = &input.1;
+    for rotation in input {
+        let step = match rotation {
+            Rotation::Left { clicks } => -clicks,
+            Rotation::Right { clicks } => *clicks,
+        };
 
-    for i in 0..directions.len() {
-        let dir = directions[i];
-        let step : isize = turns[i] % 100;
-        let mut tmp_pos: isize;
+        position = (position + step).rem_euclid(DIAL_SIZE);
 
-        if dir == 'L' {
-            tmp_pos = new_position as isize - step;
-            if tmp_pos < 0 {
-                tmp_pos = 100 + tmp_pos;
-            }
-            new_position = tmp_pos as usize;
-        } else {
-            tmp_pos = new_position as isize + step;
-            if tmp_pos > 99 {
-                tmp_pos = 100usize.abs_diff(tmp_pos as usize) as isize;
-            }
-            new_position = tmp_pos as usize
-        }
-
-        if new_position == 0 {
-            count += 1
+        if position == 0 {
+            count += 1;
         }
     }
 
-    println!("{}", count);
     count
 }
 
-
 #[aoc(day1, part2)]
-pub fn part2(input: &(Vec<char>, Vec<isize>)) -> usize {
-    let mut new_position: usize = 50;
-    let mut count = 0;
+pub fn part2(input: &[Rotation]) -> usize {
+    let (total_hits, _) = input.iter().fold((0, 50), |(count, pos), rotation| {
+        let (clicks, direction) = match rotation {
+            Rotation::Right { clicks } => (*clicks, 1),
+            Rotation::Left { clicks } => (*clicks, -1),
+        };
 
-    let directions = &input.0;
-    let turns = &input.1;
-
-    for i in 0..directions.len() {
-        let dir = directions[i];
-        let step : isize = turns[i];
-        count += step / 100;
-        let mut tmp_pos: isize = step % 100;
-
-        if dir == 'L' {
-            tmp_pos = new_position as isize - tmp_pos;
-            if tmp_pos < 0 {
-                if new_position != 0 {
-                    count += 1;
-                }
-                tmp_pos = 100 + tmp_pos;
-            }
-            if tmp_pos == 0 && step % 100 != 0 {
-                count += 1;
-            }
-            new_position = tmp_pos as usize;
+        let dist_to_zero = if pos == 0 {
+            DIAL_SIZE
+        } else if direction == 1 {
+            DIAL_SIZE - pos
         } else {
-            tmp_pos = new_position as isize + tmp_pos;
-            if tmp_pos > 99 {
-                if new_position != 0 {
-                    count += 1;
-                }
-                tmp_pos = 100usize.abs_diff(tmp_pos as usize) as isize;
-            }
-            new_position = tmp_pos as usize
-        }
-    }
+            pos
+        };
 
-    println!("{}", count);
-    count as usize
+        let hits = if clicks >= dist_to_zero {
+            1 + (clicks - dist_to_zero) / DIAL_SIZE
+        } else {
+            0
+        };
+
+        let new_pos = (pos + clicks * direction).rem_euclid(DIAL_SIZE);
+
+        (count + hits as usize, new_pos)
+    });
+
+    total_hits
 }
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -117,15 +98,13 @@ R300";
 
     #[test]
     fn test_part1() {
-        assert_eq!(3, part1(&input_generator(INPUT1)));
-        assert_eq!(5, part1(&input_generator(INPUT2)));
+        assert_eq!(part1(&input_generator(INPUT1)), 3);
+        assert_eq!(part1(&input_generator(INPUT2)), 5);
     }
-    // with real input: valid answer 1029
 
     #[test]
     fn test_part2() {
-        assert_eq!(6, part2(&input_generator(INPUT1)));
-        assert_eq!(8, part2(&input_generator(INPUT2)));
+        assert_eq!(part2(&input_generator(INPUT1)), 6);
+        assert_eq!(part2(&input_generator(INPUT2)), 8);
     }
-    // with real input: valid answer 5892
 }
