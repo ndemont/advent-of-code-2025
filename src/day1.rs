@@ -1,4 +1,3 @@
-use std::path::Component::ParentDir;
 use aoc_runner_derive::{aoc, aoc_generator};
 
 #[aoc_generator(day1)]
@@ -32,14 +31,12 @@ pub fn part1(input: &(Vec<char>, Vec<isize>)) -> usize {
         if dir == 'L' {
             tmp_pos = new_position as isize - step;
             while tmp_pos < 0 {
-                println!("{}{}", dir, step);
                 tmp_pos = 100 + tmp_pos;
             }
             new_position = tmp_pos as usize;
         } else {
             tmp_pos = new_position as isize + step;
             while tmp_pos > 99 {
-                println!("{}{}", dir, step);
                 tmp_pos = 100usize.abs_diff(tmp_pos as usize) as isize;
             }
             new_position = tmp_pos as usize
@@ -67,22 +64,17 @@ pub fn part2(input: &(Vec<char>, Vec<isize>)) -> usize {
         let dir = directions[i];
         let step : isize = turns[i];
         count += step / 100;
-        if step / 100 != 0 {
-            println!("+ {}: {}{}\n", step / 100, dir, step)
-        }
         let mut tmp_pos: isize = step % 100;
 
         if dir == 'L' {
             tmp_pos = new_position as isize - tmp_pos;
             if tmp_pos < 0 {
                 if new_position != 0 {
-                    println!("+ 1: {}{}\n", dir, step);
                     count += 1;
                 }
                 tmp_pos = 100 + tmp_pos;
-            } else if tmp_pos == 0 && step % 100 != 0 {
-                println!("new_pos: {}, tmp_pos: {}", new_position, tmp_pos);
-                println!("+ 1: {}{}\n", dir, step);
+            }
+            if tmp_pos == 0 && step % 100 != 0 {
                 count += 1;
             }
             new_position = tmp_pos as usize;
@@ -90,10 +82,8 @@ pub fn part2(input: &(Vec<char>, Vec<isize>)) -> usize {
             tmp_pos = new_position as isize + tmp_pos;
             if tmp_pos > 99 {
                 if new_position != 0 {
-                    println!("+ 1: {}{}\n", dir, step);
                     count += 1;
                 }
-                println!("+ 1: {}{}\n", dir, step);
                 tmp_pos = 100usize.abs_diff(tmp_pos as usize) as isize;
             }
             new_position = tmp_pos as usize
@@ -130,10 +120,12 @@ R300";
         assert_eq!(3, part1(&input_generator(INPUT1)));
         assert_eq!(5, part1(&input_generator(INPUT2)));
     }
+    // with real input: valid answer 1029
 
     #[test]
     fn test_part2() {
         assert_eq!(6, part2(&input_generator(INPUT1)));
         assert_eq!(8, part2(&input_generator(INPUT2)));
     }
+    // with real input: valid answer 5892
 }
