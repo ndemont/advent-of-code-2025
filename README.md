@@ -1,4 +1,3 @@
-[![Rust](https://github.com/qselle/advent-of-code-2025/actions/workflows/rust.yml/badge.svg)](https://github.com/qselle/advent-of-code-2025/actions/workflows/rust.yml) [![wakatime](https://wakatime.com/badge/github/qselle/advent-of-code-2025.svg)](https://wakatime.com/badge/github/qselle/advent-of-code-2025)
 # Advent of code 2025 🎄🎅
 
 This time in Rust to learn the language! Using https://github.com/gobanos/cargo-aoc 🦀.
