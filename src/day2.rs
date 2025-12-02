@@ -1,31 +1,34 @@
 use aoc_runner_derive::{aoc, aoc_generator};
+use itertools::Itertools;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Range {
     start: usize,
     end: usize,
 }
-fn is_invalid_id(length: usize, id: &String, position: usize, divider: usize ) -> bool {
+fn is_invalid_id(id: &str, divider: usize ) -> bool {
+    let length = id.len();
     if length < divider {
         return false;
     }
 
     if length % divider != 0 {
-       return is_invalid_id(length, id, 1, divider + 1);
+       return is_invalid_id(id, divider + 1);
     }
 
-    let split_id: Vec<&[u8]> = id.as_bytes().chunks(length / divider).collect();
-
-    if  position > split_id.len() - 1 {
-        println!("length={length}, id={id}, position={position}, divider={divider}");
-        return true;
-    }
-
-    if split_id[position - 1] == split_id[position] {
-        is_invalid_id(length, id, position + 1, divider)
+    if id.as_bytes().chunks(length/divider).all_equal() {
+        true
     } else {
-        is_invalid_id(length, id, 1, divider + 1)
+       is_invalid_id(id, divider + 1)
     }
+}
+
+fn is_invalid_id2(id: &str, start_divider: usize ) -> bool {
+    (start_divider..=id.len())
+        .filter(|&current_divider| id.len() % current_divider == 0)
+        .any(|current_divider| {
+            id.as_bytes().chunks(id.len() / current_divider).all_equal()
+        })
 }
 #[aoc_generator(day2)]
 fn parse(input: &str) -> Vec<Range> {
@@ -79,15 +82,13 @@ fn part2(input: &[Range]) -> usize {
     for range in input {
         for i in range.start..=range.end {
             let line = i.to_string();
-            let length = line.len();
 
-            if is_invalid_id(length, &line, 1, 2) {
+            if is_invalid_id(&line, 2) {
                 count += i
             }
         }
     }
 
-    println!("{count}");
     count
 }
 
