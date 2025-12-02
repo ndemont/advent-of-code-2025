@@ -54,33 +54,46 @@ fn part1(input: &[Range]) -> usize {
 }
 
 #[aoc(day2, part2)]
-fn part2(input: &[Range]) -> usize {
+fn part2(input: &[Range]) -> isize {
     let mut count: isize = 0;
 
     for range in input {
         for i in range.start..=range.end {
-            let line = i.to_string
-            let length = line.len()
+            let line = i.to_string();
+            let length = line.len();
+            let mut invalid_id = false;
 
-            for div in DIVIDERS {
-                if lenth length % div != 0 {
-                    continue
+            for &div in &DIVIDERS {
+                if length % div != 0 {
+                    continue;
                 }
 
                 let chunk_size = length / div;
                 let chunk_list: Vec<&[u8]> = line.as_bytes().chunks(chunk_size).collect();
 
-                if parts.len() >= 3 {
-                    if parts[1] == parts[2] {
-                        count += 1;
+                for chunk_pos in 0..div - 1 {
+                    if chunk_list[chunk_pos] != chunk_list[chunk_pos + 1] {
+                        break;
                     }
+                    if chunk_pos == div -2 {
+                        println!("Adding i={i} to count={count}");
+                        invalid_id = true;
+                        break;
+                    }
+                }
+
+                if invalid_id {
+                    count += i;
+                    break;
                 }
             }
         }
+
+        println!();
     }
 
     println!("{count}");
-    count as usize
+    count
 }
 
 const INPUT1: &str = "11-22,95-115,998-1012,1188511880-1188511890,222220-222224,
@@ -98,6 +111,6 @@ mod tests {
 
     #[test]
     fn part2_example() {
-        assert_eq!(part1(&parse(INPUT1)), 4174379265);
+        assert_eq!(part2(&parse(INPUT1)), 4174379265);
     }
 }
