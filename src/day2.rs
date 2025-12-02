@@ -6,6 +6,8 @@ pub struct Range {
     end: isize,
 }
 
+const DIVIDERS: [usize; 5] = [2, 3, 5, 7, 9];
+
 #[aoc_generator(day2)]
 fn parse(input: &str) -> Vec<Range> {
     let mut result = Vec::new();
@@ -57,7 +59,23 @@ fn part2(input: &[Range]) -> usize {
 
     for range in input {
         for i in range.start..=range.end {
+            let line = i.to_string
+            let length = line.len()
 
+            for div in DIVIDERS {
+                if lenth length % div != 0 {
+                    continue
+                }
+
+                let chunk_size = length / div;
+                let chunk_list: Vec<&[u8]> = line.as_bytes().chunks(chunk_size).collect();
+
+                if parts.len() >= 3 {
+                    if parts[1] == parts[2] {
+                        count += 1;
+                    }
+                }
+            }
         }
     }
 
@@ -80,6 +98,6 @@ mod tests {
 
     #[test]
     fn part2_example() {
-        // assert_eq!(part2(&parse("<EXAMPLE>")), "<RESULT>");
+        assert_eq!(part1(&parse(INPUT1)), 4174379265);
     }
 }
