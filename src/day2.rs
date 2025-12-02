@@ -76,7 +76,7 @@ fn part1(input: &[Range]) -> usize {
 }
 
 #[aoc(day2, part2)]
-fn part2(input: &[Range]) -> usize {
+fn part2_2(input: &[Range]) -> usize {
     let mut count: usize = 0;
 
     for range in input {
@@ -90,6 +90,22 @@ fn part2(input: &[Range]) -> usize {
     }
 
     count
+}
+
+fn part2_rusty(input: &[Range]) -> usize {
+    input.iter()
+        .flat_map(|range| range.start..=range.end)
+        .filter(|&i| {
+            let s = i.to_string();
+            let len = s.len();
+
+            (2..=len)
+                .filter(|&div| len % div == 0)
+                .any(|div| {
+                    s.as_bytes().chunks(len / div).all_equal()
+                })
+        })
+        .sum()
 }
 
 const INPUT1: &str = "11-22,95-115,998-1012,1188511880-1188511890,222220-222224,
