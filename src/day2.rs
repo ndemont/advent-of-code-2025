@@ -2,12 +2,31 @@ use aoc_runner_derive::{aoc, aoc_generator};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Range {
-    start: isize,
-    end: isize,
+    start: usize,
+    end: usize,
 }
+fn is_invalid_id(length: usize, id: &String, position: usize, divider: usize ) -> bool {
+    if length < divider {
+        return false;
+    }
 
-const DIVIDERS: [usize; 5] = [2, 3, 5, 7, 9];
+    if length % divider != 0 {
+       return is_invalid_id(length, id, 1, divider + 1);
+    }
 
+    let split_id: Vec<&[u8]> = id.as_bytes().chunks(length / divider).collect();
+
+    if  position > split_id.len() - 1 {
+        println!("length={length}, id={id}, position={position}, divider={divider}");
+        return true;
+    }
+
+    if split_id[position - 1] == split_id[position] {
+        is_invalid_id(length, id, position + 1, divider)
+    } else {
+        is_invalid_id(length, id, 1, divider + 1)
+    }
+}
 #[aoc_generator(day2)]
 fn parse(input: &str) -> Vec<Range> {
     let mut result = Vec::new();
@@ -36,12 +55,12 @@ fn parse(input: &str) -> Vec<Range> {
 
 #[aoc(day2, part1)]
 fn part1(input: &[Range]) -> usize {
-    let mut count: isize = 0;
+    let mut count: usize = 0;
 
     for range in input {
         for i in range.start..=range.end {
             let exp = (i.to_string().len() / 2) as u32;
-            let tenth = 10_isize.pow(exp);
+            let tenth = 10_isize.pow(exp) as usize;
 
             if i / tenth == i  % tenth {
                 count += i;
@@ -50,46 +69,22 @@ fn part1(input: &[Range]) -> usize {
     }
 
     println!("{count}");
-    count as usize
+    count
 }
 
 #[aoc(day2, part2)]
-fn part2(input: &[Range]) -> isize {
-    let mut count: isize = 0;
+fn part2(input: &[Range]) -> usize {
+    let mut count: usize = 0;
 
     for range in input {
         for i in range.start..=range.end {
             let line = i.to_string();
             let length = line.len();
-            let mut invalid_id = false;
 
-            for &div in &DIVIDERS {
-                if length % div != 0 {
-                    continue;
-                }
-
-                let chunk_size = length / div;
-                let chunk_list: Vec<&[u8]> = line.as_bytes().chunks(chunk_size).collect();
-
-                for chunk_pos in 0..div - 1 {
-                    if chunk_list[chunk_pos] != chunk_list[chunk_pos + 1] {
-                        break;
-                    }
-                    if chunk_pos == div -2 {
-                        println!("Adding i={i} to count={count}");
-                        invalid_id = true;
-                        break;
-                    }
-                }
-
-                if invalid_id {
-                    count += i;
-                    break;
-                }
+            if is_invalid_id(length, &line, 1, 2) {
+                count += i
             }
         }
-
-        println!();
     }
 
     println!("{count}");
@@ -108,9 +103,10 @@ mod tests {
     fn part1_example() {
         assert_eq!(part1(&parse(INPUT1)), 1227775554);
     }
-
+    // real input solution: 28146997880
     #[test]
     fn part2_example() {
         assert_eq!(part2(&parse(INPUT1)), 4174379265);
     }
+    // real input solution: 40028128307
 }
