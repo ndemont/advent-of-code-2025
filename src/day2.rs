@@ -12,10 +12,6 @@ fn is_invalid_id(id: &str, divider: usize ) -> bool {
         return false;
     }
 
-    if length % divider != 0 {
-       return is_invalid_id(id, divider + 1);
-    }
-
     if id.as_bytes().chunks(length/divider).all_equal() {
         true
     } else {
@@ -25,7 +21,6 @@ fn is_invalid_id(id: &str, divider: usize ) -> bool {
 
 fn is_invalid_id2(id: &str, start_divider: usize ) -> bool {
     (start_divider..=id.len())
-        .filter(|&current_divider| id.len() % current_divider == 0)
         .any(|current_divider| {
             id.as_bytes().chunks(id.len() / current_divider).all_equal()
         })
@@ -76,7 +71,7 @@ fn part1(input: &[Range]) -> usize {
 }
 
 #[aoc(day2, part2)]
-fn part2_2(input: &[Range]) -> usize {
+fn part2(input: &[Range]) -> usize {
     let mut count: usize = 0;
 
     for range in input {
@@ -100,7 +95,6 @@ fn part2_rusty(input: &[Range]) -> usize {
             let len = s.len();
 
             (2..=len)
-                .filter(|&div| len % div == 0)
                 .any(|div| {
                     s.as_bytes().chunks(len / div).all_equal()
                 })
